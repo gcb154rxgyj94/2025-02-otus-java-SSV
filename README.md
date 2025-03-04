@@ -1,2 +1,5 @@
 # 2025-02-otus-java-SSV
-Homework for OTUS 02.2025
+Столбов Святослав Владимирович
+Домашние задания по курсу от OTUS "Java Developer. Professional"
+
+
