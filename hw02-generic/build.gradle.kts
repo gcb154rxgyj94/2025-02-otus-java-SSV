@@ -6,3 +6,6 @@ dependencies {
     testImplementation ("org.assertj:assertj-core")
 }
 
+tasks.test {
+    useJUnitPlatform()
+}

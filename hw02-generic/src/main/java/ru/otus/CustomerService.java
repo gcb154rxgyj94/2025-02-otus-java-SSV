@@ -1,21 +1,23 @@
 package ru.otus;
 
 import java.util.Map;
+import java.util.TreeMap;
 
-@SuppressWarnings({"java:S1186", "java:S1135", "java:S1172"}) // при выполнении ДЗ эту аннотацию надо удалить
 public class CustomerService {
 
-    // todo: 3. надо реализовать методы этого класса
-    // важно подобрать подходящую Map-у, посмотрите на редко используемые методы, они тут полезны
+    private final TreeMap<Customer, String> customers = new TreeMap<>();
 
     public Map.Entry<Customer, String> getSmallest() {
-        // Возможно, чтобы реализовать этот метод, потребуется посмотреть как Map.Entry сделан в jdk
-        return null; // это "заглушка, чтобы скомилировать"
+        Map.Entry<Customer, String> smallest = customers.firstEntry();
+        return Map.entry(smallest.getKey().clone(), smallest.getValue());
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
-        return null; // это "заглушка, чтобы скомилировать"
+        Map.Entry<Customer, String> higherEntry = customers.higherEntry(customer);
+        return higherEntry == null ? null : Map.entry(higherEntry.getKey().clone(), higherEntry.getValue());
     }
 
-    public void add(Customer customer, String data) {}
+    public void add(Customer customer, String data) {
+        customers.put(customer.clone(), data);
+    }
 }
