@@ -1,12 +1,13 @@
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.Customer;
 import ru.otus.CustomerReverseOrder;
 import ru.otus.CustomerService;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class CustomerTest {
 
