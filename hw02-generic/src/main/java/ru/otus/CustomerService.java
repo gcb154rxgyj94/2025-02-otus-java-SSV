@@ -9,7 +9,7 @@ public class CustomerService {
 
     public Map.Entry<Customer, String> getSmallest() {
         Map.Entry<Customer, String> smallest = customers.firstEntry();
-        return Map.entry(smallest.getKey().clone(), smallest.getValue());
+        return smallest == null ? null : Map.entry(smallest.getKey().clone(), smallest.getValue());
     }
 
     public Map.Entry<Customer, String> getNext(Customer customer) {
