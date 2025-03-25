@@ -29,7 +29,7 @@ public class TestFramework {
     public static Map<String, Boolean> run(String testClass) throws ClassNotFoundException {
         if (testClass == null || testClass.isEmpty()) {
             logger.error("Параметр testClass невалидный");
-            throw new IllegalArgumentException("testClass is null or empty");
+            throw new IllegalArgumentException("Параметр testClass null или пустой");
         }
         logger.info("Запускаем тестовый класс " + testClass);
         Class<?> testClazz = Class.forName(testClass);
@@ -63,6 +63,11 @@ public class TestFramework {
             return true;
         } catch (Exception e) {
             logger.error(testClazz.getTypeName() + "." + testMethod.getName() + " упал с ошибкой " + e.getMessage());
+            try {
+                runMethodsWithAnnotations(testClassObject, After.class);
+            } catch (Exception ignored) {
+
+            }
             return false;
         }
     }

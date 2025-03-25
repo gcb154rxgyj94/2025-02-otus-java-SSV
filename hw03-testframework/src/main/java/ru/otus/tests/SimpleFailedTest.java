@@ -18,7 +18,7 @@ public class SimpleFailedTest {
     @Test
     public void test1() {
         logger.info("test1");
-        throw new RuntimeException();
+        throw new RuntimeException("Кидаем RuntimeException в ru.otus.tests.SimpleFailedTest.test1");
     }
 
     @Test
