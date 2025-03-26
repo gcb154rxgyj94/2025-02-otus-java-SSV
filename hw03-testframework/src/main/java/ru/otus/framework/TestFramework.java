@@ -27,26 +27,26 @@ public class TestFramework {
      * @param testClass - тестовый класс
      * @return - результаты выполнения тестовых методов
      */
-    public static Map<String, Boolean> run(String testClass) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static TestClassResults run(String testClass) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         if (testClass == null || testClass.isEmpty()) {
             logger.error("Параметр testClass невалидный");
             throw new IllegalArgumentException("Параметр testClass null или пустой");
         }
         logger.info("Запускаем тестовый класс " + testClass);
         Class<?> testClazz = Class.forName(testClass);
-        Map<String, Boolean> resultMethods = new HashMap<>();
+        TestClassResults testClassResults = new TestClassResults();
         List<Method> beforeMethods = getMethodsWithAnnotations(testClazz, Before.class);
         List<Method> afterMethods = getMethodsWithAnnotations(testClazz, After.class);
         Arrays.stream(testClazz.getMethods())
                 .filter(method -> method.isAnnotationPresent(Test.class))
                 .forEach(method -> {
                     try {
-                        resultMethods.put(testClass + "." + method.getName(), runTestMethods(testClazz, method, beforeMethods, afterMethods));
+                        testClassResults.add(testClass + "." + method.getName(), runTestMethods(testClazz, method, beforeMethods, afterMethods));
                     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                 });
-        return resultMethods;
+        return testClassResults;
     }
 
     /**

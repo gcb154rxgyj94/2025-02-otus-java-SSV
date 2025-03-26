@@ -2,6 +2,7 @@ package ru.otus;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.framework.TestClassResults;
 import ru.otus.framework.TestFramework;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,22 +23,8 @@ public class Main {
     public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         logger.info("Начинаем запуск тестовых класов");
         for (String testClassName : TEST_CLASSES) {
-            Map<String, Boolean> results = TestFramework.run(testClassName);
-            Set<String> successTest = new HashSet<>();
-            Set<String> failedTest = new HashSet<>();
-            results.forEach((k, v) -> {
-                if (v) {
-                    successTest.add(k);
-                } else {
-                    failedTest.add(k);
-                }
-            });
-            logger.info("Всего тестовых методов {}\nУспешно прошли: {}\n{}\nНе прошли: {}\n{}",
-                    successTest.size() + failedTest.size(),
-                    successTest.size(),
-                    String.join("\n", successTest),
-                    failedTest.size(),
-                    String.join("\n", failedTest));
+            TestClassResults results = TestFramework.run(testClassName);
+            results.printResults();
         }
     }
 }
