@@ -62,7 +62,6 @@ public class TestFramework {
         try {
             runMethodsOnObject(testClassObject, beforeMethods);
             testMethod.invoke(testClassObject);
-            runMethodsOnObject(testClassObject, afterMethods);
             return true;
         } catch (Exception e) {
             logger.error(testClazz.getTypeName() + "." + testMethod.getName() + " упал с ошибкой " + e.getMessage());
@@ -72,6 +71,7 @@ public class TestFramework {
                 runMethodsOnObject(testClassObject, afterMethods);
             } catch (Exception ignored) {
                 logger.warn("Ошибка во время повторного выполнения After метода после теста");
+                return false;
             }
         }
     }
