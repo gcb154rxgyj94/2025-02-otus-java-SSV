@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.framework.TestFramework;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class Main {
             "ru.otus.tests.TestFailedBefore"
     );
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         logger.info("Начинаем запуск тестовых класов");
         for (String testClassName : TEST_CLASSES) {
             Map<String, Boolean> results = TestFramework.run(testClassName);

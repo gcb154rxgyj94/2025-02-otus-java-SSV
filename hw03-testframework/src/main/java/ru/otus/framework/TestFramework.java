@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +27,7 @@ public class TestFramework {
      * @param testClass - тестовый класс
      * @return - результаты выполнения тестовых методов
      */
-    public static Map<String, Boolean> run(String testClass) throws ClassNotFoundException {
+    public static Map<String, Boolean> run(String testClass) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         if (testClass == null || testClass.isEmpty()) {
             logger.error("Параметр testClass невалидный");
             throw new IllegalArgumentException("Параметр testClass null или пустой");
@@ -34,11 +35,13 @@ public class TestFramework {
         logger.info("Запускаем тестовый класс " + testClass);
         Class<?> testClazz = Class.forName(testClass);
         Map<String, Boolean> resultMethods = new HashMap<>();
+        List<Method> beforeMethods = getMethodsWithAnnotations(testClazz, Before.class);
+        List<Method> afterMethods = getMethodsWithAnnotations(testClazz, After.class);
         Arrays.stream(testClazz.getMethods())
                 .filter(method -> method.isAnnotationPresent(Test.class))
                 .forEach(method -> {
                     try {
-                        resultMethods.put(testClass + "." + method.getName(), runTestMethods(testClazz, method));
+                        resultMethods.put(testClass + "." + method.getName(), runTestMethods(testClazz, method, beforeMethods, afterMethods));
                     } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
@@ -53,42 +56,55 @@ public class TestFramework {
      * @param testMethod - тестовый метод
      * @return - успешность прохождения теста
      */
-    private static boolean runTestMethods(Class<?> testClazz, Method testMethod) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private static boolean runTestMethods(Class<?> testClazz, Method testMethod, List<Method> beforeMethods, List<Method> afterMethods) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         logger.info("Запускаем тестовый метод " + testClazz.getTypeName() + "." + testMethod.getName());
         Object testClassObject = testClazz.getDeclaredConstructor().newInstance();
         try {
-            runMethodsWithAnnotations(testClassObject, Before.class);
+            runMethodsOnObject(testClassObject, beforeMethods);
             testMethod.invoke(testClassObject);
-            runMethodsWithAnnotations(testClassObject, After.class);
+            runMethodsOnObject(testClassObject, afterMethods);
             return true;
         } catch (Exception e) {
             logger.error(testClazz.getTypeName() + "." + testMethod.getName() + " упал с ошибкой " + e.getMessage());
-            try {
-                runMethodsWithAnnotations(testClassObject, After.class);
-            } catch (Exception ignored) {
-
-            }
             return false;
+        } finally {
+            try {
+                runMethodsOnObject(testClassObject, afterMethods);
+            } catch (Exception ignored) {
+                logger.warn("Ошибка во время повторного выполнения After метода после теста");
+            }
         }
     }
 
     /**
-     * Запускаем методы из класа с аннотацией
+     * Возвращает методы из класса с аннотацией
      *
-     * @param testClassObject - экземпляр класса
+     * @param testClass - класс
      * @param annotation - аннотация
      */
-    private static void runMethodsWithAnnotations(Object testClassObject, Class<? extends Annotation> annotation) {
-        Arrays.stream(testClassObject.getClass().getDeclaredMethods())
+    private static List<Method> getMethodsWithAnnotations(Class<?> testClass, Class<? extends Annotation> annotation) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Object testClassObject = testClass.getDeclaredConstructor().newInstance();
+        return Arrays.stream(testClassObject.getClass().getDeclaredMethods())
                 .filter(method -> method.isAnnotationPresent(annotation))
-                .forEach(method -> {
-                    method.setAccessible(true);
-                    try {
-                        method.invoke(testClassObject);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                .toList();
+    }
+
+    /**
+     * Запускает переданные методы на классе
+     *
+     * @param testClassObject - экземпляр класса
+     * @param methods - лист методов
+     */
+    private static void runMethodsOnObject(Object testClassObject, List<Method> methods) {
+        methods.forEach(method -> {
+            method.setAccessible(true);
+            try {
+                method.invoke(testClassObject);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
     }
 
 }
