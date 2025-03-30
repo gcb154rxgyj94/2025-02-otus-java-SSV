@@ -10,18 +10,15 @@ public class Summator {
     private int prevPrevValue = 0;
     private int sumLastThreeValues = 0;
     private int someValue = 0;
-    // !!! эта коллекция должна остаться. Заменять ее на счетчик нельзя.
     private final List<Data> listValues = new ArrayList<>();
     private final SecureRandom random = new SecureRandom();
 
-    // !!! сигнатуру метода менять нельзя
     public void calc(Data data) {
-        listValues.add(data);
-        int dataValue = data.getValue();
-        int listValuesSize = listValues.size();
-        if (listValuesSize % 100_000 == 0) {
+        int dataValue = data.value();
+        if ((listValues.size() + 1) % 100_000 == 0) {
             listValues.clear();
-            listValuesSize = 0;
+        } else {
+            listValues.add(data);
         }
         sum += dataValue + random.nextInt();
 
@@ -32,7 +29,7 @@ public class Summator {
 
         for (var idx = 0; idx < 3; idx++) {
             someValue += (sumLastThreeValues * sumLastThreeValues / (dataValue + 1) - sum);
-            someValue = someValue & 0x7fffffff + listValuesSize;
+            someValue = someValue & 0x7fffffff + listValues.size();
         }
     }
 
