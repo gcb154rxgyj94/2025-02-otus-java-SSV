@@ -1,87 +1,134 @@
 package ru.otus.atm;
 
-import ru.otus.banknotes.Banknotes;
-import ru.otus.banknotes.CellForMoney;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import ru.otus.details.CellForMoney;
+import ru.otus.details.CellsBlock;
+import ru.otus.details.ConsumerMoneyInterface;
+import ru.otus.details.GiverMoneyInterface;
+import ru.otus.money.TypeOfBanknote;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Класс ATM (банкомант)
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class ATM {
 
-    final EnumMap<Banknotes, CellForMoney> CELLS = new EnumMap<>(Banknotes.class);
-    int totalSum = 0;
+    final GiverMoneyInterface giverMoney;
+    final ConsumerMoneyInterface consumerMoney;
+    int totalSum;
 
-    public ATM() {
-        for (Banknotes banknotes: Banknotes.values()) {
-            CELLS.put(banknotes, new CellForMoney());
-        }
+    public static ATMBuilder builder() {
+        return new ATMBuilder();
     }
 
     /**
      * Положить банкноту в банкомат
      * @param banknote - номинал банкноты
      */
-    public void putMoney(int banknote) {
-        for (Banknotes banknotes: Banknotes.values()) {
-            if (banknotes.getDenomination() == banknote) {
-                CELLS.get(banknotes).incrementCount();
-                totalSum += banknote;
-                System.out.println("Банкнота " + banknote + " была успешно положена в банкомат");
-                return;
-            }
+    public ATM putMoney(int banknote) {
+        if (consumerMoney.putMoney(banknote)) {
+            totalSum += banknote;
         }
-        System.out.println("Банкомант не принимает банкноту номиналом " + banknote);
+        return this;
     }
 
     /**
-     * Выдать сумму
-     * @param sum - сумма
+     * Выдать сумму из банкомата
+     * @param sum - требуемая сумма
      */
-    public void getMoney(int sum){
-        EnumMap<Banknotes, Integer> needBanknotes = new EnumMap<>(Banknotes.class);
-
-        for (Banknotes banknotes : Banknotes.values()) {
-            needBanknotes.put(banknotes, 0);
-        }
-        if (sum > totalSum) {
+    public ATM getMoney(int sum) {
+        if (verifySum(sum)) {
             System.out.println("В банкомате недостаточно средст для выдачи " + sum);
-            return;
+            return this;
         }
-        if (sum % Banknotes.getMinimalDenomination() != 0) {
-            System.out.println("Запрашиваему сумму невозможно выдать существующими банкнотами");
-            return;
+        if (giverMoney.getMoney(sum)) {
+            totalSum -= sum;
+        }
+        return this;
+    }
+
+    /**
+     * Проверка требуемой суммы
+     * @param sum - требуемая сумма
+     * @return - хвататет ли средств для выдачи суммы
+     */
+    private boolean verifySum(int sum) {
+        return totalSum >= sum;
+    }
+
+    /**
+     * Билдер создания ATM
+     */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class ATMBuilder {
+
+        final List<TypeOfBanknote> typeOfBanknotes = new ArrayList<>();
+        Class<? extends ConsumerMoneyInterface> consumerMoneyClass;
+        Class<? extends GiverMoneyInterface> giverMoneyClass;
+
+        /**
+         * Добавление поддержки банкноты
+         * @param typeOfBanknote - тип банкноты
+         * @return - билдер
+         */
+        public ATMBuilder addBanknote(TypeOfBanknote typeOfBanknote) {
+            log.info("Добавляем в ATM поодержку банкноты номиналом: {}", typeOfBanknote.getAmount());
+            typeOfBanknotes.add(typeOfBanknote);
+            return this;
         }
 
-        int tempSum = sum;
-        List<Map.Entry<Banknotes, CellForMoney>> entryList = new ArrayList<>(CELLS.entrySet());
-        entryList.sort((entry1, entry2) -> Integer.compare(entry2.getKey().getDenomination(), entry1.getKey().getDenomination()));
-        for (Map.Entry<Banknotes, CellForMoney> entry: entryList) {
-            CellForMoney cellForMoney = entry.getValue();
-            for (int i = 0; i < cellForMoney.getCountBanknote(); i++) {
-                while (entry.getKey().getDenomination() <= tempSum) {
-                    needBanknotes.put(entry.getKey(), needBanknotes.get(entry.getKey()) + 1);
-                    tempSum -= entry.getKey().getDenomination();
-                }
-            }
-        }
-        if (tempSum != 0) {
-            System.out.println("В банкоманте нет достаточного количества банкнот для выдачи суммы " + sum);
-            return;
+        /**
+         * Добавление детали для принятия денег
+         * @param consumerMoneyClass - класс
+         * @return - билдер
+         */
+        public ATMBuilder consumerMoney(Class<? extends ConsumerMoneyInterface> consumerMoneyClass) {
+            this.consumerMoneyClass = consumerMoneyClass;
+            return this;
         }
 
-        for (Map.Entry<Banknotes, Integer> banknotes1: needBanknotes.entrySet()) {
-            totalSum -= banknotes1.getKey().getDenomination() * banknotes1.getValue();
-            CellForMoney tempCellForMoney = CELLS.get(banknotes1.getKey());
-            for (int i = 0; i < banknotes1.getValue(); i++) {
-                tempCellForMoney.decrementCount();
-            }
+        /**
+         * Добавление детали для выдачи денег
+         * @param giverMoneyClass - класс
+         * @return - билдер
+         */
+        public ATMBuilder giverMoney(Class<? extends GiverMoneyInterface> giverMoneyClass) {
+            this.giverMoneyClass = giverMoneyClass;
+            return this;
         }
-        System.out.println("Сумма " + sum + " была успешно выдана");
+
+        /**
+         * Создание ATM
+         * @return - ATM
+         */
+        public ATM build() throws Exception {
+
+            if (typeOfBanknotes.isEmpty()) {
+                throw new IllegalArgumentException("Список поддерживаемых банкнот пустой");
+            } else if (consumerMoneyClass == null) {
+                throw new IllegalArgumentException("Нет класса для принятия денег");
+            } else if (giverMoneyClass == null) {
+                throw new IllegalArgumentException("Нет класса для выдачи денег");
+            }
+
+            log.info("Создаем ATM");
+            CellsBlock.CellsBlockBuilder cellsBlockBuilder = CellsBlock.builder();
+            typeOfBanknotes.forEach(typeOfBanknote -> cellsBlockBuilder.addCell(new CellForMoney(typeOfBanknote)));
+            CellsBlock cellsBlock = cellsBlockBuilder.build();
+            return new ATM(
+                    giverMoneyClass.getDeclaredConstructor(CellsBlock.class).newInstance(cellsBlock),
+                    consumerMoneyClass.getDeclaredConstructor(CellsBlock.class).newInstance(cellsBlock)
+            );
+
+        }
+
     }
 
 }
