@@ -28,20 +28,19 @@ public class Ioc {
     private static class LogInvocationHandler implements InvocationHandler {
 
         private final Object object;
-        private Set<Method> methods;
+        private final Set<String> methodsWithAnnotation;
 
         private LogInvocationHandler(Object object) {
             this.object = object;
-            this.methods = Arrays.stream(object.getClass().getMethods()).collect(Collectors.toSet());
+            this.methodsWithAnnotation = Arrays.stream(object.getClass().getMethods())
+                    .filter(method -> method.isAnnotationPresent(Log.class))
+                    .map(method -> method.getName() + Arrays.toString(method.getParameterTypes()))
+                    .collect(Collectors.toSet());
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Method targetMethod = methods.stream()
-                    .filter(method1 -> method1.getName().equals(method.getName()) && Arrays.equals(method1.getParameterTypes(), method.getParameterTypes()))
-                    .findFirst()
-                    .orElseThrow(() -> new ClassNotFoundException("Не найден метод " + method.getName() + " с параметрами " + Arrays.toString(method.getParameterTypes())));
-            if (targetMethod.isAnnotationPresent(Log.class)) {
+            if (methodsWithAnnotation.contains(method.getName() + Arrays.toString(method.getParameterTypes()))) {
                 System.out.print("executed method: " + method.getName() + ", params: ");
                 Arrays.stream(args)
                         .forEach(
