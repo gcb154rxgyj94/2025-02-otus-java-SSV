@@ -10,8 +10,8 @@ import ru.otus.details.ConsumerMoneyInterface;
 import ru.otus.details.GiverMoneyInterface;
 import ru.otus.money.TypeOfBanknote;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Класс ATM (банкомант)
@@ -34,8 +34,11 @@ public class ATM {
      */
     public ATM putMoney(int banknote) {
         if (consumerMoney.putMoney(banknote)) {
+            log.info("Положили в банкомат " +  banknote + " монет");
             totalSum += banknote;
+            return this;
         }
+        log.error("Не удалось положить в банкомат " +  banknote + " монет");
         return this;
     }
 
@@ -45,38 +48,43 @@ public class ATM {
      */
     public ATM getMoney(int sum) {
         if (verifySum(sum)) {
-            System.out.println("В банкомате недостаточно средст для выдачи " + sum);
+            log.error("В банкомате недостаточно средств для выдачи " + sum);
             return this;
         }
         if (giverMoney.getMoney(sum)) {
             totalSum -= sum;
+            return this;
         }
+        log.error("Операция выдачи денег не удалась");
         return this;
     }
 
     /**
-     * Проверка требуемой суммы
-     * @param sum - требуемая сумма
-     * @return - хвататет ли средств для выдачи суммы
+     * Выдать оставшуюся сумму из банкомата
      */
-    private boolean verifySum(int sum) {
-        return totalSum >= sum;
+    public int getRemainingSum() {
+        return giverMoney.getRemainingSum();
     }
 
     /**
-     * Билдер создания ATM
+     * Проверка требуемой суммы
+     */
+    private boolean verifySum(int sum) {
+        return totalSum < sum;
+    }
+
+    /**
+     * Билдер ATM
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ATMBuilder {
 
-        final List<TypeOfBanknote> typeOfBanknotes = new ArrayList<>();
+        final Set<TypeOfBanknote> typeOfBanknotes = new HashSet<>();
         Class<? extends ConsumerMoneyInterface> consumerMoneyClass;
         Class<? extends GiverMoneyInterface> giverMoneyClass;
 
         /**
-         * Добавление поддержки банкноты
-         * @param typeOfBanknote - тип банкноты
-         * @return - билдер
+         * Добавление поддержки типа банкноты
          */
         public ATMBuilder addBanknote(TypeOfBanknote typeOfBanknote) {
             log.info("Добавляем в ATM поодержку банкноты номиналом: {}", typeOfBanknote.getAmount());
@@ -86,27 +94,24 @@ public class ATM {
 
         /**
          * Добавление детали для принятия денег
-         * @param consumerMoneyClass - класс
-         * @return - билдер
          */
         public ATMBuilder consumerMoney(Class<? extends ConsumerMoneyInterface> consumerMoneyClass) {
+            log.info("Добавляем в ATM деталь для принятия денег: {}", consumerMoneyClass);
             this.consumerMoneyClass = consumerMoneyClass;
             return this;
         }
 
         /**
          * Добавление детали для выдачи денег
-         * @param giverMoneyClass - класс
-         * @return - билдер
          */
         public ATMBuilder giverMoney(Class<? extends GiverMoneyInterface> giverMoneyClass) {
+            log.info("Добавляем в ATM деталь для снятия денег: {}", giverMoneyClass);
             this.giverMoneyClass = giverMoneyClass;
             return this;
         }
 
         /**
          * Создание ATM
-         * @return - ATM
          */
         public ATM build() throws Exception {
 

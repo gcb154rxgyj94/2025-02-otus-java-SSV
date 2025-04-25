@@ -1,11 +1,13 @@
 package ru.otus.details;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Часть, отвечающая за принятие денег в АТМ
  */
 @RequiredArgsConstructor
+@Slf4j
 public class ConsumerMoneyDefault implements ConsumerMoneyInterface {
 
     final CellsBlock cellsBlock;
@@ -23,13 +25,13 @@ public class ConsumerMoneyDefault implements ConsumerMoneyInterface {
     }
 
     /**
-     * Валидация банкноты
+     * Первичная валидация суммы (могут быть иные необходимые проверки)
      * @param banknote - банкнота
-     * @return - прошла валидацию или нет
+     * @return - прошла валидацию, или нет
      */
     private boolean validateBanknote(int banknote) {
         if (banknote <= 0) {
-            System.out.println("Номинал банкноты некорректный");
+            log.error("Номинал банкноты некорректный (неположительный)");
             return false;
         }
         return true;

@@ -7,4 +7,6 @@ public interface GiverMoneyInterface {
 
     boolean getMoney(int sum);
 
+    int getRemainingSum();
+
 }

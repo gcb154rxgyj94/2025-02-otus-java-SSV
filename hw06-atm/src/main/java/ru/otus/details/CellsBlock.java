@@ -3,6 +3,7 @@ package ru.otus.details;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,51 +13,77 @@ import java.util.TreeSet;
  * Блок со всеми ячейками
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class CellsBlock {
 
     final TreeSet<CellForMoney> cells;
 
+    /**
+     * Билдер создания CellsBlock
+     */
     public static CellsBlockBuilder builder() {
         return new CellsBlockBuilder();
     }
 
     /**
      * Положить банкноту в ячейку
-     * @param banknote - банкнота
-     * @return - успешность операции
      */
     public boolean put(int banknote) {
         for (CellForMoney cell: cells) {
             if (cell.isSuitableForCell(banknote)) {
                 cell.incrementCount();
-                System.out.println("Банкнота " + banknote + " была успешно положена в банкомат");
+                log.info("Банкнота " + banknote + " была успешно положена в ячейку");
                 return true;
             }
         }
-        System.out.println("Банкомант не принимает банкноту номиналом " + banknote);
+        log.error("Банкомант не принимает банкноту номиналом " + banknote);
         return false;
     }
 
     /**
      * Выдать сумму из ячеек
-     * @param sum - сумма
-     * @return - успешность операции
      */
     public boolean get(int sum) {
         if (validateSum(sum)) {
             Map<CellForMoney, Integer> needBanknotesFromEveryCell = canGetByExistBanknotes(sum);
             if (needBanknotesFromEveryCell.isEmpty()) {
+                log.error("В банкоманте нет достаточного количества банкнот для выдачи суммы " + sum);
                 return false;
             }
-            for (Map.Entry<CellForMoney, Integer> cellForMoneyIntegerEntry: needBanknotesFromEveryCell.entrySet()) {
+            for (var cellForMoneyIntegerEntry: needBanknotesFromEveryCell.entrySet()) {
                 for (int i = 0; i < cellForMoneyIntegerEntry.getValue(); i++) {
                     cellForMoneyIntegerEntry.getKey().decrementCount();
                 }
             }
-            System.out.println("Сумма " + sum + " была успешно выдана");
+            log.info("Сумма " + sum + " была успешно выдана");
             return true;
         }
         return false;
+    }
+
+    /**
+     * Выдать оставшуюся сумму из ячеек
+     */
+    public int getRemainingSum() {
+        int sum = 0;
+        for (CellForMoney cell: cells) {
+            while (cell.decrementCount()) {
+                sum += cell.getSumByCountBanknotes(1);
+            }
+        }
+        log.info("Сумма " + sum + " была успешно выдана");
+        return sum;
+    }
+
+    /**
+     * Валидация суммы
+     */
+    private boolean validateSum(int sum) {
+        if (!getCellWithMinimalBanknote().canGetSumOfBanknotes(sum)) {
+            log.error("Запрашиваему сумму невозможно выдать существующими банкнотами, сумма не кратна минимальному номиналу");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -68,37 +95,19 @@ public class CellsBlock {
     }
 
     /**
-     * Валидация суммы
-     * @param sum - сумма
-     * @return - успешность проверки
-     */
-    private boolean validateSum(int sum) {
-        if (getCellWithMinimalBanknote().canGetSumOfBanknotes(sum)) {
-            System.out.println("Запрашиваему сумму невозможно выдать существующими банкнотами");
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Может ли сумма быть выдана существующими банкнотами
-     * @param sum - сумма
+     * Может ли сумма быть выдана существующими в блоке банкнотами
      * @return - список требуемых банкнот (если сумма не может быть выдана - список пустой)
      */
     private Map<CellForMoney, Integer> canGetByExistBanknotes(int sum) {
         Map<CellForMoney, Integer> needBanknotesFromEveryCell = new HashMap<>();
         int remainingSum = sum;
         for (CellForMoney cellForMoney: cells.descendingSet()) {
-            for (int i = 1; cellForMoney.canGetCountOfBanknotes(i) && remainingSum >= sum; i++) {
+            for (int i = 1; cellForMoney.canGetCountOfBanknotes(i) && remainingSum >= cellForMoney.getSumByCountBanknotes(1); i++) {
                 needBanknotesFromEveryCell.put(cellForMoney, needBanknotesFromEveryCell.computeIfAbsent(cellForMoney, key -> 0) + 1);
                 remainingSum -= cellForMoney.getSumByCountBanknotes(1);
             }
         }
-        if (remainingSum != 0) {
-            System.out.println("В банкоманте нет достаточного количества банкнот для выдачи суммы " + sum);
-            return Map.of();
-        }
-        return needBanknotesFromEveryCell;
+        return remainingSum != 0 ? Map.of() : needBanknotesFromEveryCell;
     }
 
     /**
@@ -111,8 +120,6 @@ public class CellsBlock {
 
         /**
          * Добавление ячейки в блок
-         * @param cellForMoney - тип банкноты
-         * @return - билдер
          */
         public CellsBlock.CellsBlockBuilder addCell(CellForMoney cellForMoney) {
             cellForMonies.add(cellForMoney);
@@ -121,9 +128,8 @@ public class CellsBlock {
 
         /**
          * Создание CellsBlock
-         * @return - CellsBlock
          */
-        public CellsBlock build() throws Exception {
+        public CellsBlock build() {
             if (cellForMonies.isEmpty()) {
                 throw new IllegalArgumentException("В блоке нет ячеек с деньгами");
             }

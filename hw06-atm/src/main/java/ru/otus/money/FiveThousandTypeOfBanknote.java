@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Банкнота в 5000 монет
+ * Тип банкноты номиналом в 5000 монет
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FiveThousandTypeOfBanknote extends TypeOfBanknote {

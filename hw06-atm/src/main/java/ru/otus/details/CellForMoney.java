@@ -1,11 +1,13 @@
 package ru.otus.details;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.otus.money.TypeOfBanknote;
 
 /**
- * Ячейка для банкнот одного номинала
+ * Ячейка для банкнот одного типа
  */
 @RequiredArgsConstructor
+@Slf4j
 public class CellForMoney implements Comparable<CellForMoney> {
 
     final TypeOfBanknote typeOfBanknote;
@@ -15,6 +17,7 @@ public class CellForMoney implements Comparable<CellForMoney> {
      * Положить банкноту в ячейку
      */
     public void incrementCount() {
+        log.info("В ячейку положили банкноту номиналом " + typeOfBanknote.getAmount());
         countBanknote += 1;
     }
 
@@ -23,25 +26,23 @@ public class CellForMoney implements Comparable<CellForMoney> {
      */
     public boolean decrementCount() {
         if(countBanknote > 0) {
+            log.info("Из ячейки выдали банкноту номиналом " + typeOfBanknote.getAmount());
             countBanknote -= 1;
             return true;
         }
+        log.error("В ячейке с банкнотами номинала " + typeOfBanknote.getAmount() + " больше нет купюр");
         return false;
     }
 
     /**
-     * Првоерка на совпадение бакноты номиналу ячейки
-     * @param banknote1 - номинал банкноты
-     * @return - совпадение
+     * Проверка на совпадение бакноты номиналу ячейки
      */
-    public boolean isSuitableForCell(int banknote1) {
-        return typeOfBanknote.getAmount() == banknote1;
+    public boolean isSuitableForCell(int banknote) {
+        return typeOfBanknote.getAmount() == banknote;
     }
 
     /**
-     * Првоерка на возможность выдать сумму только данным номиналом
-     * @param sum - сумма
-     * @return - возможность
+     * Првоерка на возможность выдать сумму только данным типом банкнот
      */
     public boolean canGetSumOfBanknotes(int sum) {
         return sum % typeOfBanknote.getAmount() == 0;
@@ -49,8 +50,6 @@ public class CellForMoney implements Comparable<CellForMoney> {
 
     /**
      * Проверка на возможность получения определенного количества банкнот
-     * @param count - количество банкнот
-     * @return - возможость получения count банкнот
      */
     public boolean canGetCountOfBanknotes(int count) {
         return countBanknote >= count;

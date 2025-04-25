@@ -1,7 +1,7 @@
 package ru.otus.money;
 
 /**
- * Банкнота определенного номинала
+ * Тип банкноты определенного номинала
  */
 public abstract class TypeOfBanknote {
 
