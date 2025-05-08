@@ -11,3 +11,7 @@ dependencies {
     testCompileOnly ("org.projectlombok:lombok")
     testAnnotationProcessor ("org.projectlombok:lombok")
 }
+
+tasks.test {
+    useJUnitPlatform()
+}

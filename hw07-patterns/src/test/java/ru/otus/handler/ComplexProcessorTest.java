@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.rmi.UnexpectedException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +21,7 @@ class ComplexProcessorTest {
 
     @Test
     @DisplayName("Тестируем вызовы процессоров")
-    void handleProcessorsTest() {
+    void handleProcessorsTest(){
         // given
         var message = new Message.Builder(1L).field7("field7").build();
 
@@ -45,7 +46,7 @@ class ComplexProcessorTest {
 
     @Test
     @DisplayName("Тестируем обработку исключения")
-    void handleExceptionTest() {
+    void handleExceptionTest(){
         // given
         var message = new Message.Builder(1L).field8("field8").build();
 

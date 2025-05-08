@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.model.Message;
 
+import java.rmi.UnexpectedException;
+
 public class LoggerProcessor implements Processor {
     private static final Logger logger = LoggerFactory.getLogger(LoggerProcessor.class);
 
@@ -14,7 +16,7 @@ public class LoggerProcessor implements Processor {
     }
 
     @Override
-    public Message process(Message message) {
+    public Message process(Message message){
         logger.info("log processing message:{}", message);
         return processor.process(message);
     }

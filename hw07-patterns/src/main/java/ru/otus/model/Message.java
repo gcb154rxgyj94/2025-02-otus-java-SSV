@@ -1,17 +1,18 @@
 package ru.otus.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+
+import java.util.List;
 
 @SuppressWarnings({"java:S107", "java:S1135"})
-@Getter
 @AllArgsConstructor
-@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Message {
+@Getter
+public class Message implements Cloneable {
 
     @EqualsAndHashCode.Include
     final long id;
@@ -27,10 +28,56 @@ public class Message {
     final String field10;
     final String field11;
     final String field12;
+
+    @Getter(AccessLevel.NONE)
     final ObjectForMessage field13;
 
     public Builder toBuilder() {
         return new Builder(id, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, field11, field12, field13);
+    }
+
+    public ObjectForMessage getField13() {
+        ObjectForMessage objectForMessage =  new ObjectForMessage();
+        objectForMessage.setData(List.copyOf(field13.getData()));
+        return objectForMessage;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" + "id="
+                + id + ", field1='"
+                + field1 + '\'' + ", field2='"
+                + field2 + '\'' + ", field3='"
+                + field3 + '\'' + ", field4='"
+                + field4 + '\'' + ", field5='"
+                + field5 + '\'' + ", field6='"
+                + field6 + '\'' + ", field7='"
+                + field7 + '\'' + ", field8='"
+                + field8 + '\'' + ", field9='"
+                + field9 + '\'' + ", field10='"
+                + field10 + '\'' + ", field11='"
+                + field11 + '\'' + ", field12='"
+                + field12 + '\'' + ", field13='"
+                + field13.toString() + '\'' + '}';
+    }
+
+    @Override
+    public Message clone() {
+        return  new Message.Builder(this.id)
+                .field1(this.field1)
+                .field2(this.field2)
+                .field3(this.field3)
+                .field4(this.field4)
+                .field5(this.field5)
+                .field6(this.field6)
+                .field7(this.field7)
+                .field8(this.field8)
+                .field9(this.field9)
+                .field10(this.field10)
+                .field11(this.field11)
+                .field12(this.field12)
+                .field13(this.getField13())
+                .build();
     }
 
     @AllArgsConstructor
@@ -112,7 +159,9 @@ public class Message {
         }
 
         public Builder field13(ObjectForMessage field13) {
-            this.field13 = field13;
+            ObjectForMessage objectForMessage =  new ObjectForMessage();
+            objectForMessage.setData(List.copyOf(field13.getData()));
+            this.field13 = objectForMessage;
             return this;
         }
 
