@@ -5,6 +5,7 @@ include("hw03-testframework")
 include("hw04-gc")
 include("hw05-bytecode")
 include("hw06-atm")
+include("hw08-serializable")
 include("hw07-patterns")
 
 pluginManagement {
