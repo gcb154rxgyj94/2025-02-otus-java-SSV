@@ -1,17 +1,19 @@
-package ru.otus.jdbc.mapper;
+package ru.otus.jdbc.mapper.interfac;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 
-/** "Разбирает" объект на составные части */
+/**
+ * Интерфейс для разбивки класса на составные части
+ * @param <T> - класс
+ */
 public interface EntityClassMetaData<T> {
+
     String getName();
 
     Constructor<T> getConstructor();
 
-    // Поле Id должно определять по наличию аннотации Id
-    // Аннотацию @Id надо сделать самостоятельно
     Field getIdField();
 
     List<Field> getAllFields();
