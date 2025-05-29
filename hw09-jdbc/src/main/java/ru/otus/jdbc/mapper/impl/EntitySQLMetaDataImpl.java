@@ -1,6 +1,5 @@
 package ru.otus.jdbc.mapper.impl;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.otus.jdbc.mapper.interfac.EntityClassMetaData;
 import ru.otus.jdbc.mapper.interfac.EntitySQLMetaData;
@@ -10,7 +9,6 @@ import java.lang.reflect.Field;
 @RequiredArgsConstructor
 public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
 
-    @Getter
     final EntityClassMetaData<?> entityClassMetaData;
 
     String selectAllSql;
@@ -50,9 +48,7 @@ public class EntitySQLMetaDataImpl implements EntitySQLMetaData {
             }
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             stringBuilder.append(") values(");
-            for (int i = 0; i < entityClassMetaData.getFieldsWithoutId().size(); i++) {
-                stringBuilder.append("?,");
-            }
+            stringBuilder.append("?,".repeat(entityClassMetaData.getFieldsWithoutId().size()));
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             stringBuilder.append(")");
             insertSql = stringBuilder.toString();

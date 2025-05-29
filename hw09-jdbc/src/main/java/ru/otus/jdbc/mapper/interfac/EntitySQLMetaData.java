@@ -13,6 +13,4 @@ public interface EntitySQLMetaData {
 
     String getUpdateSql();
 
-    EntityClassMetaData<?> getEntityClassMetaData();
-
 }

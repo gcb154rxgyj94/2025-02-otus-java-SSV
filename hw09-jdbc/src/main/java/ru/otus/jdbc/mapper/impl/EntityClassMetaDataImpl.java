@@ -48,7 +48,7 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
     @Override
     public Field getIdField() {
         if (idField == null) {
-            idField = Arrays.stream(entityClass.getDeclaredFields())
+            idField = getAllFields().stream()
                     .filter(field -> field.getAnnotation(Id.class) != null)
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("У класса " + getName() + " нет поля с аннотацией @Id"));
@@ -68,7 +68,7 @@ public class EntityClassMetaDataImpl<T> implements EntityClassMetaData<T> {
     public List<Field> getFieldsWithoutId() {
         if (fieldsWithoutId == null) {
             fieldsWithoutId = getAllFields().stream()
-                    .filter(field -> !field.getName().equals(getIdField().getName()))
+                    .filter(field -> field.getAnnotation(Id.class) == null)
                     .collect(Collectors.toList());
         }
         return fieldsWithoutId;
