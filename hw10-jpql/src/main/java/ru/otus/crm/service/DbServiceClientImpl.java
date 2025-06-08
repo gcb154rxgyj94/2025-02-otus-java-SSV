@@ -23,7 +23,7 @@ public class DbServiceClientImpl implements DBServiceClient {
     public Client saveClient(Client client) {
         return transactionManager.doInTransaction(session -> {
             var clientCloned = client.clone();
-            if (client.getId() == null) {
+            if (client.getId() == 0) {
                 var savedClient = clientDataTemplate.insert(session, clientCloned);
                 log.info("created client: {}", clientCloned);
                 return savedClient;

@@ -40,7 +40,7 @@ public class Client implements Cloneable {
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "phone_id")
+    @JoinColumn(name = "client_id")
     private List<Phone> phones;
 
     public Client(String name) {
