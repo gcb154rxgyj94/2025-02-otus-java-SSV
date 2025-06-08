@@ -5,8 +5,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic")
     implementation("org.hibernate.orm:hibernate-core")
     implementation("org.flywaydb:flyway-core")
-
     implementation("org.postgresql:postgresql")
+    runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
     testImplementation("com.h2database:h2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine")

@@ -12,6 +12,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -19,15 +21,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
+@Table(name = "client")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "client")
 public class Client implements Cloneable {
 
     @Id
-    @SequenceGenerator(name = "client_gen", sequenceName = "client_seq", initialValue = 1, allocationSize = 1)
+    @SequenceGenerator(name = "client_gen", sequenceName = "client_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_gen")
     @Column(name = "id")
     private Long id;
@@ -35,38 +37,45 @@ public class Client implements Cloneable {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "client_id")
-    private List<Phone> phones;
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Phone> phones = new ArrayList<>();
 
     public Client(String name) {
         this.id = null;
         this.address = null;
         this.name = name;
-        this.phones = null;
     }
 
     public Client(Long id, String name) {
         this.id = id;
         this.name = name;
         this.address = null;
-        this.phones = null;
     }
 
     public Client(Long id, String name, Address address, List<Phone> phones) {
         this.address = address.clone();
         this.id = id;
         this.name = name;
-        this.phones = List.copyOf(phones);
+        List<Phone> clonedPhones = new ArrayList<>();
+        for (Phone phone : this.phones) {
+            Phone phone1 = phone.clone();
+            phone1.setClient(this);
+            clonedPhones.add(phone.clone());
+        }
+        this.phones = clonedPhones;
     }
 
     @Override
     public Client clone() {
-        return new Client(this.id, this.name, this.address.clone(), List.copyOf(this.phones));
+        List<Phone> clonedPhones = new ArrayList<>();
+        for (Phone phone : this.phones) {
+            clonedPhones.add(phone.clone());
+        }
+        return new Client(this.id, this.name, this.address.clone(), clonedPhones);
     }
 
     @Override
