@@ -61,10 +61,10 @@ public class Client implements Cloneable {
         this.id = id;
         this.name = name;
         List<Phone> clonedPhones = new ArrayList<>();
-        for (Phone phone : this.phones) {
+        for (Phone phone : phones) {
             Phone phone1 = phone.clone();
             phone1.setClient(this);
-            clonedPhones.add(phone.clone());
+            clonedPhones.add(phone1);
         }
         this.phones = clonedPhones;
     }
