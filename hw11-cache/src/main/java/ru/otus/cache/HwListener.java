@@ -1,4 +1,4 @@
-package cachehw;
+package ru.otus.cache;
 
 public interface HwListener<K, V> {
 

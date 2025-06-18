@@ -1,4 +1,4 @@
-package cachehw;
+package ru.otus.cache;
 
 import java.util.HashSet;
 import java.util.Map;
