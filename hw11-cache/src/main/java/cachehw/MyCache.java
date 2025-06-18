@@ -1,30 +1,57 @@
 package cachehw;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+/**
+ * Самописный кеш
+ */
 public class MyCache<K, V> implements HwCache<K, V> {
-    // Надо реализовать эти методы
+
+    private final Map<K, V> cashe = new WeakHashMap<>();
+    private final Set<HwListener<K, V>> listeners = new HashSet<>();
 
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        cashe.put(key, value);
+        notifyListeners(key, value, "put");
     }
 
     @Override
     public void remove(K key) {
-        throw new UnsupportedOperationException();
+        V value = cashe.remove(key);
+        if (value != null) {
+            notifyListeners(key, value, "remove");
+        }
     }
 
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        V val = cashe.remove(key);
+        notifyListeners(key, val, "get");
+        return val;
     }
 
     @Override
     public void addListener(HwListener<K, V> listener) {
-        throw new UnsupportedOperationException();
+        listeners.add(listener);
     }
 
     @Override
     public void removeListener(HwListener<K, V> listener) {
-        throw new UnsupportedOperationException();
+        listeners.remove(listener);
     }
+
+    private void notifyListeners(K key, V value, String action) {
+        listeners.forEach(listener -> {
+            try {
+                listener.notify(key, value, action);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 }
