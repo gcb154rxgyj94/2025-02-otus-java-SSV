@@ -38,7 +38,7 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("updated client: {}", savedClient);
             return savedClient;
         });
-        cache.put(client1.getId().toString(), client1);
+        cache.put(String.valueOf(client1.getId()), client1.clone());
         return client1;
     }
 
@@ -53,16 +53,18 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("client: {}", clientOptional);
             return clientOptional;
         });
-        client.ifPresent(value -> cache.put(value.getId().toString(), value));
+        client.ifPresent(value -> cache.put(String.valueOf(value.getId()), value));
         return client;
     }
 
     @Override
     public List<Client> findAll() {
-        return transactionManager.doInReadOnlyTransaction(session -> {
+        List<Client> list = transactionManager.doInReadOnlyTransaction(session -> {
             var clientList = clientDataTemplate.findAll(session);
             log.info("clientList:{}", clientList);
             return clientList;
         });
+        list.forEach(value -> cache.put(String.valueOf(value.getId()), value.clone()));
+        return list;
     }
 }
