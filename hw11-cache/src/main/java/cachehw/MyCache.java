@@ -29,7 +29,7 @@ public class MyCache<K, V> implements HwCache<K, V> {
 
     @Override
     public V get(K key) {
-        V val = cashe.remove(key);
+        V val = cashe.get(key);
         notifyListeners(key, val, "get");
         return val;
     }
