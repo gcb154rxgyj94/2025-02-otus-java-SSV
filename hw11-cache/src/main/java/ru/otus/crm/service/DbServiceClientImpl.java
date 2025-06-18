@@ -2,6 +2,7 @@ package ru.otus.crm.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.cache.HwCache;
 import ru.otus.core.repository.DataTemplate;
 import ru.otus.core.sessionmanager.TransactionManager;
 import ru.otus.crm.model.Client;
@@ -14,15 +15,19 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
+    private final HwCache<String, Client> cache;
 
-    public DbServiceClientImpl(TransactionManager transactionManager, DataTemplate<Client> clientDataTemplate) {
+    public DbServiceClientImpl(TransactionManager transactionManager,
+                               DataTemplate<Client> clientDataTemplate,
+                               HwCache<String, Client> cache) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
+        this.cache = cache;
     }
 
     @Override
     public Client saveClient(Client client) {
-        return transactionManager.doInTransaction(session -> {
+        Client client1 = transactionManager.doInTransaction(session -> {
             var clientCloned = client.clone();
             if (client.getId() == null) {
                 var savedClient = clientDataTemplate.insert(session, clientCloned);
@@ -33,15 +38,19 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("updated client: {}", savedClient);
             return savedClient;
         });
+        cache.put(client1.getId().toString(), client1);
+        return client1;
     }
 
     @Override
     public Optional<Client> getClient(long id) {
-        return transactionManager.doInReadOnlyTransaction(session -> {
+        Optional<Client> client = transactionManager.doInReadOnlyTransaction(session -> {
             var clientOptional = clientDataTemplate.findById(session, id);
             log.info("client: {}", clientOptional);
             return clientOptional;
         });
+        client.ifPresent(value -> cache.put(value.getId().toString(), value));
+        return client;
     }
 
     @Override
