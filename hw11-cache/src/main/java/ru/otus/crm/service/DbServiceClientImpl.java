@@ -15,14 +15,14 @@ public class DbServiceClientImpl implements DBServiceClient {
 
     private final DataTemplate<Client> clientDataTemplate;
     private final TransactionManager transactionManager;
-    private final HwCache<String, Client> cache;
+    private final HwCache<String, Client> clientsCache;
 
     public DbServiceClientImpl(TransactionManager transactionManager,
                                DataTemplate<Client> clientDataTemplate,
-                               HwCache<String, Client> cache) {
+                               HwCache<String, Client> clientsCache) {
         this.transactionManager = transactionManager;
         this.clientDataTemplate = clientDataTemplate;
-        this.cache = cache;
+        this.clientsCache = clientsCache;
     }
 
     @Override
@@ -38,13 +38,13 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("updated client: {}", savedClient);
             return savedClient;
         });
-        cache.put(String.valueOf(client1.getId()), client1.clone());
+        clientsCache.put(String.valueOf(client1.getId()), client1.clone());
         return client1;
     }
 
     @Override
     public Optional<Client> getClient(long id) {
-        Optional<Client> client = Optional.of(cache.get(String.valueOf(id)));
+        Optional<Client> client = Optional.of(clientsCache.get(String.valueOf(id)));
         if (client.isPresent()) {
             return client;
         }
@@ -53,7 +53,7 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("client: {}", clientOptional);
             return clientOptional;
         });
-        client.ifPresent(value -> cache.put(String.valueOf(value.getId()), value));
+        client.ifPresent(value -> clientsCache.put(String.valueOf(value.getId()), value.clone()));
         return client;
     }
 
@@ -64,7 +64,7 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("clientList:{}", clientList);
             return clientList;
         });
-        list.forEach(value -> cache.put(String.valueOf(value.getId()), value.clone()));
+        list.forEach(value -> clientsCache.put(String.valueOf(value.getId()), value.clone()));
         return list;
     }
 }

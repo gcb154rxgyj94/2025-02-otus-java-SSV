@@ -33,7 +33,7 @@ public class DbServiceDemo {
         ///
         var clientTemplate = new DataTemplateHibernate<>(Client.class);
         ///
-        MyCache<String, Client> dbServiceCache = new MyCache<>(5);
+        MyCache<String, Client> dbServiceCache = new MyCache<>(10);
         dbServiceCache.addListener(new HwListener<>() {
             @Override
             public void notify(String key, Client value, String action) {
