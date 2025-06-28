@@ -22,13 +22,13 @@ public class ServiceFactoryHibernate implements ServiceFactory {
     }
 
     @Override
-    public <T> DBService getService(Class<T> entityClass) {
+    public <T> DBService<T> getService(Class<T> entityClass) {
         if (entityClass.equals(User.class)) {
             var userTemplate = new DataTemplateHibernate<>(User.class);
-            return new DbServiceUser(transactionManagerHibernate, userTemplate, createCache());
+            return (DBService<T>) new DbServiceUser(transactionManagerHibernate, userTemplate, createCache());
         } else if (entityClass.equals(Client.class)) {
             var clientTemplate = new DataTemplateHibernate<>(Client.class);
-            return new DbServiceClient(transactionManagerHibernate, clientTemplate, createCache());
+            return (DBService<T>) new DbServiceClient(transactionManagerHibernate, clientTemplate, createCache());
         }
         throw new IllegalArgumentException("No service found for class: " + entityClass.getName());
     }
