@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Клиенты</title>
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+    </style>
+    <script>
+        function addPhoneField() {
+            const phoneContainer = document.getElementById('phoneContainer');
+            const newPhoneInput = document.createElement('input');
+            newPhoneInput.type = 'text';
+            newPhoneInput.name = 'clientPhone';
+            newPhoneInput.placeholder = 'Введите телефон клиента';
+            newPhoneInput.className = 'form-group';
+            phoneContainer.appendChild(newPhoneInput);
+        }
+    </script>
+</head>
+
+<body>
+
+<h4>Добавить клиента</h4>
+
+<form action="/api/client" method="post">
+    <div class="form-group">
+        <label for="clientName">Имя клиента:</label>
+        <input type="text" id="clientName" name="clientName" placeholder="Введите имя клиента" required>
+    </div>
+
+    <div class="form-group">
+        <label for="clientAddress">Адрес клиента:</label>
+        <input type="text" id="clientAddress" name="clientAddress" placeholder="Введите адрес клиента">
+    </div>
+
+    <div class="form-group">
+        <label>Телефоны клиента:</label>
+        <div id="phoneContainer">
+            <input type="text" name="clientPhone" placeholder="Введите телефон клиента" class="form-group">
+        </div>
+        <button type="button" onclick="addPhoneField()">Добавить телефон</button>
+    </div>
+
+    <button type="submit">Добавить клиента</button>
+</form>
+
+<h4>Список клиентов</h4>
+<table style="width: 400px">
+    <thead>
+        <tr>
+            <th style="width: 10%;">Id</th>
+            <th style="width: 30%;">Имя</th>
+            <th style="width: 30%;">Адрес</th>
+            <th style="width: 30%;">Телефоны</th>
+        </tr>
+    </thead>
+    <tbody>
+        <#list clients as client>
+            <tr>
+                <td>${client.id}</td>
+                <td>${client.name}</td>
+                <td>
+                    <#if client.address??>
+                        ${client.address.street}
+                    <#else>
+                        Нет адреса
+                    </#if>
+                </td>
+                <td>
+                    <#if client.phones?? && (client.phones?size > 0)>
+                        <#list client.phones as phone>
+                            ${phone.number}<br/>
+                        </#list>
+                    <#else>
+                        Нет телефонов
+                    </#if>
+                </td>
+            </tr>
+        </#list>
+    </tbody>
+</table>
+</body>
+</html>
