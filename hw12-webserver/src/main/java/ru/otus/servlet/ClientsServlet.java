@@ -3,6 +3,7 @@ package ru.otus.servlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import ru.otus.crm.model.Client;
 import ru.otus.crm.service.DBService;
 
@@ -12,6 +13,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Сервлет для Client
+ */
+@RequiredArgsConstructor
 public class ClientsServlet extends HttpServlet {
 
     private static final String USERS_PAGE_TEMPLATE = "clients.html";
@@ -19,11 +24,6 @@ public class ClientsServlet extends HttpServlet {
 
     private final transient DBService<Client> clientDBService;
     private final transient TemplateProcessor templateProcessor;
-
-    public ClientsServlet(TemplateProcessor templateProcessor, DBService<Client> clientDBService) {
-        this.templateProcessor = templateProcessor;
-        this.clientDBService = clientDBService;
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws IOException {

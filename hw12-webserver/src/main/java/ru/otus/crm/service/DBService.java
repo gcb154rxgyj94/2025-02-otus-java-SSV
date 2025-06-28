@@ -1,12 +1,10 @@
 package ru.otus.crm.service;
 
-import ru.otus.crm.model.Client;
-
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Сервис для работы с User в БД
+ * Сервис для работы с сущностями в БД
  */
 public interface DBService<T> {
 

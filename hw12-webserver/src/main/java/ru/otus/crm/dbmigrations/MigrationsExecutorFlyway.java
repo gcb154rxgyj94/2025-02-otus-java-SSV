@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Класс для миграции данных в БД
+ * Класс для миграции данных в БД через Flyway
  */
 public class MigrationsExecutorFlyway {
     private static final Logger logger = LoggerFactory.getLogger(MigrationsExecutorFlyway.class);

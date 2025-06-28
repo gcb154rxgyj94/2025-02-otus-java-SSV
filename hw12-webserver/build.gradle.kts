@@ -4,8 +4,6 @@ dependencies {
     implementation("org.hibernate.orm:hibernate-core")
 
     implementation("ch.qos.logback:logback-classic")
-    implementation("com.google.code.gson:gson")
-//    implementation("org.freemarker:freemarker:2.3.31")
     implementation("org.flywaydb:flyway-core")
     implementation("org.postgresql:postgresql")
     runtimeOnly("org.flywaydb:flyway-database-postgresql")

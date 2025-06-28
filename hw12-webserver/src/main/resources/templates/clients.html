@@ -78,14 +78,10 @@
                     </#if>
                 </td>
                 <td>
-                    <#if client.phones??>
-                        <#if (client.phones?size > 0)>
-                            <#list client.phones as phone>
-                                ${phone.number}<br/>
-                            </#list>
-                        <#else>
-                            Нет телефонов
-                        </#if>
+                    <#if client.phones?? && (client.phones?size > 0)>
+                        <#list client.phones as phone>
+                            ${phone.number}<br/>
+                        </#list>
                     <#else>
                         Нет телефонов
                     </#if>

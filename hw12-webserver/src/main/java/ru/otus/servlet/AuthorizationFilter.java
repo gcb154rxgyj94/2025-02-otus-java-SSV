@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/**
+ * Фильтр авторизации
+ */
 public class AuthorizationFilter implements Filter {
 
     private ServletContext context;
@@ -41,7 +44,6 @@ public class AuthorizationFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
-        // Not implemented
-    }
+    public void destroy() {}
+
 }

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import ru.otus.crm.model.User;
 import ru.otus.crm.service.DBService;
 
+/**
+ * Аутентицикация пользователей через DBServiceUser
+ */
 @RequiredArgsConstructor
 public class UserAuthServiceImpl implements UserAuthService {
 

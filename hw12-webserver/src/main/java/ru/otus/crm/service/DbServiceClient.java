@@ -11,6 +11,9 @@ import ru.otus.crm.model.User;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервис для работы с Client
+ */
 public class DbServiceClient implements DBService<Client> {
     private static final Logger log = LoggerFactory.getLogger(DbServiceClient.class);
 

@@ -9,6 +9,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
+/**
+ * Процессор создания странис через FreeMarker
+ */
 public class TemplateProcessorImpl implements TemplateProcessor {
 
     private final Configuration configuration;

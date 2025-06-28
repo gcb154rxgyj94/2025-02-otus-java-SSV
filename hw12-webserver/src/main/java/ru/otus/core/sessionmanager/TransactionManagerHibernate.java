@@ -1,15 +1,16 @@
 package ru.otus.core.sessionmanager;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.SessionFactory;
 
 import java.util.concurrent.Callable;
 
+/**
+ * Менеджер транзакций Hibernate
+ */
+@RequiredArgsConstructor
 public class TransactionManagerHibernate implements TransactionManager {
     private final SessionFactory sessionFactory;
-
-    public TransactionManagerHibernate(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public <T> T doInTransaction(TransactionAction<T> action) {

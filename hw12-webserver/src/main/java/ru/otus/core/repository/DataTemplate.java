@@ -5,6 +5,10 @@ import org.hibernate.Session;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Шаблоны репозиториев для работы с сущностями в БД
+ * @param <T>
+ */
 public interface DataTemplate<T> {
     Optional<T> findById(Session session, long id);
 

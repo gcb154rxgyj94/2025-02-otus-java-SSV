@@ -1,7 +1,5 @@
 package ru.otus;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ru.otus.helpers.DbServicesUtils;
 import ru.otus.services.TemplateProcessor;
 import ru.otus.services.TemplateProcessorImpl;
@@ -18,12 +16,11 @@ public class Main {
     public static void main(String[] args) throws Exception {
         DbServicesUtils.initDBConnection();
 
-        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
         TemplateProcessor templateProcessor = new TemplateProcessorImpl(TEMPLATES_DIR);
         UserAuthService authService = new UserAuthServiceImpl(DbServicesUtils.getDbServiceUser());
 
         ClientsWebServer usersWebServer = new ClientsWebServerWithFilterBasedSecurity(
-                WEB_SERVER_PORT, authService, DbServicesUtils.getDbServiceClient(), gson, templateProcessor);
+                WEB_SERVER_PORT, authService, DbServicesUtils.getDbServiceClient(), templateProcessor);
         usersWebServer.start();
         usersWebServer.join();
     }

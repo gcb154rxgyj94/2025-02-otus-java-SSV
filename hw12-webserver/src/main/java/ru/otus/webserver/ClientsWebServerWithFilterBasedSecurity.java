@@ -1,6 +1,5 @@
 package ru.otus.webserver;
 
-import com.google.gson.Gson;
 import org.eclipse.jetty.ee10.servlet.FilterHolder;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
@@ -21,8 +20,8 @@ public class ClientsWebServerWithFilterBasedSecurity extends ClientsWebServerSim
     private final UserAuthService authService;
 
     public ClientsWebServerWithFilterBasedSecurity(
-            int port, UserAuthService authService, DBService<Client> dbServiceClient, Gson gson, TemplateProcessor templateProcessor) {
-        super(port, dbServiceClient, gson, templateProcessor);
+            int port, UserAuthService authService, DBService<Client> dbServiceClient, TemplateProcessor templateProcessor) {
+        super(port, dbServiceClient, templateProcessor);
         this.authService = authService;
     }
 
