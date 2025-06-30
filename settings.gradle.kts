@@ -10,6 +10,7 @@ include("hw08-serializable")
 include("hw09-jdbc")
 include("hw10-jpql")
 include("hw11-cache")
+include("hw13-di")
 
 pluginManagement {
     val jgitver: String by settings
@@ -32,4 +33,3 @@ pluginManagement {
         id("com.diffplug.spotless") version spotless
     }
 }
-include("hw13-di")
