@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import ru.otus.appcontainer.AppComponentsContainerImpl;
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
-import ru.otus.config.AppConfig;
+import ru.otus.config.AppConfig1;
 import ru.otus.services.*;
 
 class AppTest {
@@ -38,7 +38,7 @@ class AppTest {
             })
     void shouldExtractFromContextCorrectComponentWithNotNullFields(String classNameOrBeanId, Class<?> rootClass)
             throws Exception {
-        var ctx = new AppComponentsContainerImpl(AppConfig.class);
+        var ctx = new AppComponentsContainerImpl(AppConfig1.class);
 
         assertThat(classNameOrBeanId).isNotEmpty();
         Object component;

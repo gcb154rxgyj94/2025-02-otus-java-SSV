@@ -5,7 +5,7 @@ import ru.otus.appcontainer.api.AppComponent;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
-public class MethodComparatorByOrder implements Comparator<Method> {
+public class AppComponentComparatorByOrder implements Comparator<Method> {
 
     @Override
     public int compare(Method o1, Method o2) {

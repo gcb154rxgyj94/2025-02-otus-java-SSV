@@ -1,18 +1,12 @@
 package ru.otus.appcontainer;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
@@ -23,17 +17,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
 
-    public AppComponentsContainerImpl(Class<?> initialConfigClass) throws Exception{
-        processConfig(initialConfigClass);
+    public AppComponentsContainerImpl(Class<?>... initialConfigClass) throws Exception{
+        Arrays.stream(initialConfigClass).forEach(this::checkConfigClass);
+        for (Class<?> configClass : orderAppComponentsContainerConfig(initialConfigClass)) {
+            processConfig(configClass);
+        }
     }
 
     private void processConfig(Class<?> configClass) throws Exception {
-        checkConfigClass(configClass);
         Object config = createConfig(configClass);
-        List<Method> methods = getAppComponentMethods(configClass)
-                .stream()
-                .sorted(new MethodComparatorByOrder())
-                .toList();
+        List<Method> methods = getOrderedAppComponentMethods(configClass);
         for (Method method : methods) {
             String componentName = method.getAnnotation(AppComponent.class).name();
             if (appComponentsByName.containsKey(componentName)) {
@@ -63,9 +56,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         return constructor.newInstance();
     }
 
-    private List<Method> getAppComponentMethods(Class<?> configClass) {
+    private List<Class<?>> orderAppComponentsContainerConfig(Class<?>... configClasses) {
+        return Arrays.stream(configClasses)
+                .sorted(new AppComponentsContainerConfigComparatorByOrder())
+                .toList();
+    }
+
+    private List<Method> getOrderedAppComponentMethods(Class<?> configClass) {
         return Arrays.stream(configClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(AppComponent.class))
+                .sorted(new AppComponentComparatorByOrder())
                 .toList();
     }
 
