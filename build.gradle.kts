@@ -27,6 +27,7 @@ allprojects {
         mavenCentral()
     }
 
+    val reflections: String by project
     val testcontainersBom: String by project
     val protobufBom: String by project
     val guava: String by project
@@ -40,6 +41,7 @@ allprojects {
                 mavenBom("com.google.protobuf:protobuf-bom:$protobufBom")
             }
             dependency("com.google.guava:guava:$guava")
+            dependency("org.reflections:reflections:$reflections")
         }
     }
 }

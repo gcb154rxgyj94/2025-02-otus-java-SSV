@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.reflections.Reflections;
 import ru.otus.appcontainer.api.AppComponent;
 import ru.otus.appcontainer.api.AppComponentsContainer;
 import ru.otus.appcontainer.api.AppComponentsContainerConfig;
@@ -16,6 +18,14 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private final List<Object> appComponents = new ArrayList<>();
     private final Map<String, Object> appComponentsByName = new HashMap<>();
+
+    public AppComponentsContainerImpl(String classPath) throws Exception {
+        Reflections reflections = new Reflections(classPath);
+        Class<?>[] annotatedClasses = reflections.getTypesAnnotatedWith(AppComponentsContainerConfig.class).toArray(new Class<?>[0]);
+        for (Class<?> configClass : orderAppComponentsContainerConfig(annotatedClasses)) {
+            processConfig(configClass);
+        }
+    }
 
     public AppComponentsContainerImpl(Class<?>... initialConfigClass) throws Exception{
         Arrays.stream(initialConfigClass).forEach(this::checkConfigClass);
