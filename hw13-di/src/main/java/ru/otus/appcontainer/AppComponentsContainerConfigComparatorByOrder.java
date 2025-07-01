@@ -9,7 +9,6 @@ public class AppComponentsContainerConfigComparatorByOrder implements Comparator
 
     @Override
     public int compare(Class<?> o1, Class<?> o2) {
-        System.out.println();
         return Integer.compare(o1.getAnnotation(AppComponentsContainerConfig.class).order(), o2.getAnnotation(AppComponentsContainerConfig.class).order());
     }
 

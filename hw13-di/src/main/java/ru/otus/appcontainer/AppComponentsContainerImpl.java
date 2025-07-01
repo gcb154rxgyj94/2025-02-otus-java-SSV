@@ -81,9 +81,8 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     private Object createComponent(Object config, Method method) {
         method.setAccessible(true);
-        List<Class<?>> parameters = List.of(method.getParameterTypes());
         List<Object> params = new ArrayList<>();
-        for (Class<?> classParam : parameters) {
+        for (Class<?> classParam : List.of(method.getParameterTypes())) {
             if (!componentExists(classParam)) {
                 throw new IllegalStateException(
                         String.format("Not found component %s for create component %s", classParam.getName(), method.getReturnType())

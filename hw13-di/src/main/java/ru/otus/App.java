@@ -2,42 +2,31 @@ package ru.otus;
 
 import ru.otus.appcontainer.AppComponentsContainerImpl;
 import ru.otus.appcontainer.api.AppComponentsContainer;
+import ru.otus.config.AppConfig;
 import ru.otus.config.AppConfig1;
 import ru.otus.config.AppConfig2;
 import ru.otus.services.GameProcessor;
+import ru.otus.services.GameProcessorImpl;
 
-/*
-В классе AppComponentsContainerImpl реализовать обработку, полученной в конструкторе конфигурации,
-основываясь на разметке аннотациями из пакета appcontainer. Так же необходимо реализовать методы getAppComponent.
-В итоге должно получиться работающее приложение. Менять можно только класс AppComponentsContainerImpl.
-Можно добавлять свои исключения.
-
-Раскоментируйте тест:
-@Disabled //надо удалить
-Тест и демо должны проходить для всех реализованных вариантов
-Не называйте свой проект ДЗ "homework-template", это имя заготовки)
-
-PS Приложение представляет собой тренажер таблицы умножения
-*/
-
-@SuppressWarnings({"squid:S125", "squid:S106"})
 public class App {
 
     public static void main(String[] args) throws Exception {
-        // Опциональные варианты
-//         AppComponentsContainer container = new AppComponentsContainerImpl(AppConfig1.class, AppConfig2.class);
+        AppComponentsContainer container1 = new AppComponentsContainerImpl(AppConfig1.class, AppConfig2.class);
+        AppComponentsContainer container2 = new AppComponentsContainerImpl("ru.otus.config");
+        AppComponentsContainer container3 = new AppComponentsContainerImpl(AppConfig.class);
 
-        // Тут можно использовать библиотеку Reflections (см. зависимости)
-         AppComponentsContainer container = new AppComponentsContainerImpl("ru.otus.config");
+        GameProcessor gameProcessor1 = container1.getAppComponent(GameProcessor.class);
+        GameProcessor gameProcessor2 = container1.getAppComponent(GameProcessorImpl.class);
+        GameProcessor gameProcessor3 = container1.getAppComponent("gameProcessor");
 
-        // Обязательный вариант
-//        AppComponentsContainer container = new AppComponentsContainerImpl(AppConfig.class);
+        gameProcessor1 = container2.getAppComponent(GameProcessor.class);
+        gameProcessor2 = container2.getAppComponent(GameProcessorImpl.class);
+        gameProcessor3 = container2.getAppComponent("gameProcessor");
 
-        // Приложение должно работать в каждом из указанных ниже вариантов
-        GameProcessor gameProcessor = container.getAppComponent(GameProcessor.class);
-//         GameProcessor gameProcessor = container.getAppComponent(GameProcessorImpl.class);
-//         GameProcessor gameProcessor = container.getAppComponent("gameProcessor");
+        gameProcessor1 = container3.getAppComponent(GameProcessor.class);
+        gameProcessor2 = container3.getAppComponent(GameProcessorImpl.class);
+        gameProcessor3 = container3.getAppComponent("gameProcessor");
 
-        gameProcessor.startGame();
+        gameProcessor1.startGame();
     }
 }
