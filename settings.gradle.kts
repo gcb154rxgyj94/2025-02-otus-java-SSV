@@ -10,6 +10,7 @@ include("hw08-serializable")
 include("hw09-jdbc")
 include("hw10-jpql")
 include("hw11-cache")
+include("hw12-webserver")
 include("hw13-di")
 
 pluginManagement {
