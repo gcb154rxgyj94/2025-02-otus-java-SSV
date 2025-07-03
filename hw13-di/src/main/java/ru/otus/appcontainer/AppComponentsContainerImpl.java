@@ -88,10 +88,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
                         String.format("Not found component %s for create component %s", classParam.getName(), method.getReturnType())
                 );
             }
-            params.add(appComponents.stream()
-                    .filter(appComponent -> classParam.isAssignableFrom(appComponent.getClass()))
-                    .findFirst()
-                    .get());
+            params.add(getAppComponent(classParam));
         }
         Object component;
         try {
@@ -113,21 +110,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
-        boolean componentFind = false;
-        C component = null;
-        for (Object appComponent : appComponents) {
-            if (componentClass.isInstance(appComponent)) {
-                if (componentFind) {
-                    throw new IllegalArgumentException(String.format("There are more than 1 component %s", componentClass.getName()));
-                }
-                componentFind = true;
-                component = (C) appComponent;
-            }
-        }
-        if (!componentFind) {
+        List<Object> components = appComponents.stream()
+                .filter(appComponent -> componentClass.isAssignableFrom(appComponent.getClass()))
+                .toList();
+        if (components.isEmpty()) {
             throw new IllegalArgumentException(String.format("No component %s", componentClass.getName()));
+        } else if (components.size() > 1) {
+            throw new IllegalArgumentException(String.format("There are more than 1 component %s", componentClass.getName()));
+        } else {
+            return (C) components.get(0);
         }
-        return component;
     }
 
     @Override
