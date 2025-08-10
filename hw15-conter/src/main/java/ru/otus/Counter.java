@@ -19,7 +19,6 @@ public class Counter {
                     try {
                         monitor.wait();
                     } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
                         throw new RuntimeException(e);
                     }
                 }
