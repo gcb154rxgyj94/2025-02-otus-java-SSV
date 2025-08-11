@@ -9,7 +9,6 @@ import ru.otus.crm.model.Client;
 import ru.otus.crm.repository.ClientRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Сервис для работы с Client
@@ -29,13 +28,6 @@ public class DbServiceClientImpl implements DBServiceClient {
             log.info("saved client: {}", client);
             return client;
         });
-    }
-
-    @Override
-    public Optional<Client> getClient(long id) {
-        var clientOptional = clientRepository.findById(id);
-        log.info("client: {}", clientOptional);
-        return clientOptional;
     }
 
     @Override
