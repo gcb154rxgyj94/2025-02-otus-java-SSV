@@ -23,7 +23,7 @@ public class GeneratingNumbersServiceImpl extends GeneratingNumbersServiceGrpc.G
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(
                 () -> {
-                    long value = currentNumber.incrementAndGet();
+                    long value = currentNumber.getAndIncrement();
                     responseObserver.onNext(GeneratingNumbersResponse.newBuilder().setNumber(value).build());
                     if (currentNumber.get() > request.getLastValue()) {
                         executor.shutdown();
