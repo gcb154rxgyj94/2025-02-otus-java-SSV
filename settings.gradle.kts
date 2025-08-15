@@ -15,6 +15,7 @@ include("hw13-di")
 include("hw14-spring-jdbc")
 include("hw15-conter")
 include("hw17-gRPC")
+include("hw16-SensorDataProcessorBuffered")
 
 pluginManagement {
     val jgitver: String by settings
