@@ -12,6 +12,9 @@ include("hw10-jpql")
 include("hw11-cache")
 include("hw12-webserver")
 include("hw13-di")
+include("hw14-spring-jdbc")
+include("hw15-conter")
+include("hw17-gRPC")
 include("hw16-SensorDataProcessorBuffered")
 
 pluginManagement {
