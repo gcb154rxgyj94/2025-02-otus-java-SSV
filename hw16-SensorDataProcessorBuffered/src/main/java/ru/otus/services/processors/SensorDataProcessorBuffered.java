@@ -24,7 +24,7 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
     }
 
     @Override
-    public synchronized void process(SensorData data) {
+    public void process(SensorData data) {
         buffer.add(data);
         log.info("Добавили данные в buffer: {}", data);
         if (buffer.size() >= bufferSize){
@@ -32,17 +32,13 @@ public class SensorDataProcessorBuffered implements SensorDataProcessor {
         }
     }
 
-    public synchronized void flush() {
+    public void flush() {
         try {
-            int size = buffer.size();
-            if (size != 0) {
-                List<SensorData> list = new ArrayList<>(buffer.size());
-                for(int i = 0; i < size; i++) {
-                    list.add(buffer.poll());
-                }
-                buffer.clear();
+            List<SensorData> list = new ArrayList<>();
+            buffer.drainTo(list);
+            if (!list.isEmpty()){
                 writer.writeBufferedData(list);
-                log.info("Отправили буфферизованные данные: {} штук", size);
+                log.info("Отправили буфферизованные данные");
             }
         } catch (Exception e) {
             log.error("Ошибка в процессе записи буфера", e);
