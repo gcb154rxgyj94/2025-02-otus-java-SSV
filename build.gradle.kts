@@ -1,6 +1,6 @@
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
-import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
+import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 
 plugins {
     idea
@@ -31,6 +31,7 @@ allprojects {
     val testcontainersBom: String by project
     val protobufBom: String by project
     val guava: String by project
+    val grpc: String by project
 
     apply(plugin = "io.spring.dependency-management")
     dependencyManagement {
@@ -42,6 +43,10 @@ allprojects {
             }
             dependency("com.google.guava:guava:$guava")
             dependency("org.reflections:reflections:$reflections")
+
+            dependency("io.grpc:grpc-netty:$grpc")
+            dependency("io.grpc:grpc-protobuf:$grpc")
+            dependency("io.grpc:grpc-stub:$grpc")
         }
     }
 }
