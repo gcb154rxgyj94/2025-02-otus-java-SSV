@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ApplConfig {
     private static final int THREAD_POOL_SIZE = 2;
 
-    @Bean(destroyMethod = "close")
+    @Bean(destroyMethod = "shutdownGracefully")
     public NioEventLoopGroup eventLoopGroup() {
         return new NioEventLoopGroup(THREAD_POOL_SIZE, new ThreadFactory() {
             private final AtomicLong threadIdGenerator = new AtomicLong(0);

@@ -21,7 +21,13 @@ const connect = () => {
         setConnected(true);
         const userName = frame.headers["user-name"];
         const roomId = document.getElementById(roomIdElementId).value;
-        console.log(`Connected to roomId: ${roomId} frame:${frame}`);
+        console.log(`Connected to roomId: ${roomId} frame:${frame}`);ъ
+        const sendButton = document.getElementById("send");
+        if (roomId === "1408") {
+            sendButton.style.display = "none";
+        } else {
+            sendButton.style.display = "inline-block";
+        }
         const topicName = `/topic/response.${roomId}`;
         const topicNameUser = `/user/${userName}${topicName}`;
         stompClient.subscribe(topicName, (message) => showMessage(JSON.parse(message.body).messageStr));

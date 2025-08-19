@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,13 +43,14 @@ public class DataController {
         return msgId;
     }
 
-    @GetMapping(value = "/msg/{roomId}", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    public Flux<MessageDto> getMessagesByRoomId(@PathVariable("roomId") String roomId) {
-        return Mono.just(roomId)
-                .doOnNext(room -> log.info("getMessagesByRoomId, room:{}", room))
-                .flatMapMany(dataStore::loadMessages)
-                .map(message -> new MessageDto(message.msgText()))
+    @GetMapping(value = "/msg", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<MessageDto> getMessages(@RequestParam(value = "roomId", required = false) String roomId) {
+        Flux<Message> messagesFlux = (roomId != null)
+                ? dataStore.loadMessages(roomId).doOnSubscribe(sub -> log.info("getMessagesByRoomId, room: {}", roomId))
+                : dataStore.loadAllMessages().doOnSubscribe(sub -> log.info("getAllMessages"));
+        return messagesFlux.map(message -> new MessageDto(message.msgText()))
                 .doOnNext(msgDto -> log.info("msgDto:{}", msgDto))
                 .subscribeOn(workerPool);
     }
+
 }

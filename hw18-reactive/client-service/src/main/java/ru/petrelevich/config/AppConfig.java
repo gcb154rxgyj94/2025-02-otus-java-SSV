@@ -3,6 +3,7 @@ package ru.petrelevich.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.nio.NioEventLoopGroup;
 import jakarta.annotation.Nullable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Configuration
 public class AppConfig {
     private static final int THREAD_POOL_SIZE = 2;
+    private static final int SECRET_ROOM = 1408;
 
     @Bean
     public WebClient datastoreClient(WebClient.Builder builder, @Value("${datastore.url}") String url) {
@@ -27,7 +29,7 @@ public class AppConfig {
         return new ObjectMapper();
     }
 
-    @Bean(destroyMethod = "close")
+    @Bean(destroyMethod = "shutdownGracefully")
     public NioEventLoopGroup eventLoopGroup() {
         return new NioEventLoopGroup(THREAD_POOL_SIZE, new ThreadFactory() {
             private final AtomicLong threadIdGenerator = new AtomicLong(0);
@@ -51,4 +53,11 @@ public class AppConfig {
     public ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory resourceFactory) {
         return new ReactorClientHttpConnector(resourceFactory, mapper -> mapper);
     }
+
+    @Bean
+    @Qualifier("secretRoom")
+    public Integer secretRoom() {
+        return SECRET_ROOM;
+    }
+
 }
