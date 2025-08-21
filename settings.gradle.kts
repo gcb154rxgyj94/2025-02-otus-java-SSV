@@ -16,6 +16,8 @@ include("hw14-spring-jdbc")
 include("hw15-conter")
 include("hw16-SensorDataProcessorBuffered")
 include("hw17-gRPC")
+include("hw18-reactive:client-service")
+include("hw18-reactive:datastore-service")
 
 pluginManagement {
     val jgitver: String by settings
